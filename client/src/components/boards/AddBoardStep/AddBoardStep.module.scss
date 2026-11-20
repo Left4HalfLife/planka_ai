@@ -21,6 +21,15 @@
     margin-bottom: 8px;
   }
 
+  .typeButtons {
+    margin-bottom: 12px;
+
+    .button {
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+  }
+
   .importButton {
     background: transparent;
     box-shadow: none;

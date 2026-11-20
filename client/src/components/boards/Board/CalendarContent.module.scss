@@ -1,0 +1,100 @@
+/*!
+ * Copyright (c) 2024 PLANKA Software GmbH
+ * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
+ */
+
+:global(#app) {
+  .card {
+    background: #fff;
+    border: 0;
+    border-left: 4px solid #109dc0;
+    border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+    color: #17394d;
+    cursor: pointer;
+    display: block;
+    font-size: 11px;
+    margin-bottom: 4px;
+    overflow: hidden;
+    padding: 4px 5px;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+  }
+
+  .cards {
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .day {
+    background: rgba(255, 255, 255, 0.96);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    min-height: 100px;
+    overflow: hidden;
+    padding: 5px;
+  }
+
+  .dayMuted {
+    background: rgba(240, 242, 244, 0.96);
+    color: #9aa4ab;
+  }
+
+  .dayNumber {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .grid {
+    background: #d9dee2;
+    display: grid;
+    flex: 1;
+    gap: 1px;
+    grid-template-columns: repeat(7, minmax(100px, 1fr));
+    min-height: 650px;
+    min-width: 760px;
+    overflow: hidden;
+  }
+
+  .todayButton {
+    margin-left: auto !important;
+  }
+
+  .toolbar {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+    padding-bottom: 10px;
+
+    h2 {
+      color: #fff;
+      font-size: 18px;
+      margin: 0;
+      min-width: 180px;
+      text-align: center;
+    }
+  }
+
+  .weekday {
+    background: #f4f6f7;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 8px;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .wrapper {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: auto;
+    padding: 0 20px 20px;
+    width: 100%;
+  }
+}

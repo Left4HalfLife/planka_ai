@@ -156,6 +156,7 @@ module.exports.routes = {
   'GET /api/projects': 'projects/index',
   'POST /api/projects': 'projects/create',
   'GET /api/projects/:id': 'projects/show',
+  'POST /api/projects/:projectId/assistant': 'projects/query-assistant',
   'PATCH /api/projects/:id': 'projects/update',
   'DELETE /api/projects/:id': 'projects/delete',
 

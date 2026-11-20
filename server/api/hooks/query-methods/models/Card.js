@@ -166,6 +166,16 @@ const getByListIds = async (listIds, { sort = ['position', 'id'] } = {}) =>
     { sort },
   );
 
+const getForAssistant = (listIds, { field, start, end, isClosed }) =>
+  defaultFind({
+    listId: listIds,
+    [field]: {
+      '>=': start,
+      '<': end,
+    },
+    ...(!_.isUndefined(isClosed) && { isClosed }),
+  });
+
 const getOneById = (id, { listId } = {}) => {
   const criteria = {
     id,
@@ -242,6 +252,7 @@ module.exports = {
   getByListId,
   getByEndlessListId,
   getByListIds,
+  getForAssistant,
   getOneById,
   update,
   updateOne,

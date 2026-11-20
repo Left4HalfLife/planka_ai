@@ -38,6 +38,8 @@
  *         $ref: '#/components/responses/Unauthorized'
  *       404:
  *         $ref: '#/components/responses/NotFound'
+ *       409:
+ *         description: The board is used by a timeline or calendar view
  */
 
 const { idInput } = require('../../../utils/inputs');
@@ -45,6 +47,9 @@ const { idInput } = require('../../../utils/inputs');
 const Errors = {
   BOARD_NOT_FOUND: {
     boardNotFound: 'Board not found',
+  },
+  DEPENDENT_VIEWS_EXIST: {
+    dependentViewsExist: 'Delete dependent timeline and calendar views first',
   },
 };
 
@@ -59,6 +64,9 @@ module.exports = {
   exits: {
     boardNotFound: {
       responseType: 'notFound',
+    },
+    dependentViewsExist: {
+      responseType: 'conflict',
     },
   },
 
@@ -76,6 +84,11 @@ module.exports = {
 
     if (!isProjectManager) {
       throw Errors.BOARD_NOT_FOUND; // Forbidden
+    }
+
+    const dependentViews = await Board.qm.getBySourceBoardId(board.id);
+    if (dependentViews.length > 0) {
+      throw Errors.DEPENDENT_VIEWS_EXIST;
     }
 
     board = await sails.helpers.boards.deleteOne.with({

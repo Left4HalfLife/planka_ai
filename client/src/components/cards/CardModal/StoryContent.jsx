@@ -86,7 +86,7 @@ const StoryContent = React.memo(() => {
     canAddAttachment,
     canAddCustomFieldGroup,
   } = useSelector((state) => {
-    const boardMembership = selectors.selectCurrentUserMembershipForCurrentBoard(state);
+    const boardMembership = selectors.selectCurrentUserMembershipForCurrentCardBoard(state);
 
     let isMember = false;
     let isEditor = false;

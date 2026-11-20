@@ -6,7 +6,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { Button, Divider, Header, Tab } from 'semantic-ui-react';
+import { Button, Divider, Header, Message, Tab } from 'semantic-ui-react';
 
 import selectors from '../../../../selectors';
 import entryActions from '../../../../entry-actions';
@@ -21,6 +21,10 @@ const GeneralPane = React.memo(() => {
 
   const boardId = useSelector((state) => selectors.selectCurrentModal(state).params.id);
   const board = useSelector((state) => selectBoardById(state, boardId));
+  const boards = useSelector(selectors.selectBoardsForCurrentProject);
+  const hasDependentViews = boards.some(
+    (boardItem) => boardItem.sourceBoardId === boardId && boardItem.id !== boardId,
+  );
 
   const dispatch = useDispatch();
   const [t] = useTranslation();
@@ -34,6 +38,9 @@ const GeneralPane = React.memo(() => {
   return (
     <Tab.Pane attached={false} className={styles.wrapper}>
       <EditInformation />
+      {hasDependentViews && (
+        <Message warning content={t('common.deleteDependentViewsFirst')} />
+      )}
       <Divider horizontal section>
         <Header as="h4">
           {t('common.dangerZone', {
@@ -50,7 +57,7 @@ const GeneralPane = React.memo(() => {
           typeContent="common.typeTitleToConfirm"
           onConfirm={handleDeleteConfirm}
         >
-          <Button className={styles.actionButton}>
+          <Button disabled={hasDependentViews} className={styles.actionButton}>
             {t(`action.deleteBoard`, {
               context: 'title',
             })}

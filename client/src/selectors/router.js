@@ -17,6 +17,12 @@ export const selectPathname = ({
   },
 }) => pathname;
 
+export const selectLocationState = ({
+  router: {
+    location: { state },
+  },
+}) => state;
+
 export const selectPathsMatch = createReselectSelector(selectPathname, (pathname) =>
   matchPaths(pathname, Object.values(Paths)),
 );
@@ -24,8 +30,9 @@ export const selectPathsMatch = createReselectSelector(selectPathname, (pathname
 export const selectPath = createReduxOrmSelector(
   orm,
   selectPathsMatch,
+  selectLocationState,
   (state) => selectCurrentUserId(state),
-  ({ User, Project, Board, Card }, pathsMatch, currentUserId) => {
+  ({ User, Project, Board, Card }, pathsMatch, locationState, currentUserId) => {
     if (pathsMatch) {
       const currentUserModel = User.withId(currentUserId);
 
@@ -69,9 +76,18 @@ export const selectPath = createReduxOrmSelector(
             };
           }
 
+          const viewBoardModel =
+            locationState?.viewBoardId && Board.withId(locationState.viewBoardId);
+          const boardModel =
+            viewBoardModel &&
+            viewBoardModel.projectId === cardModel.board.projectId &&
+            viewBoardModel.isAvailableForUser(currentUserModel)
+              ? viewBoardModel
+              : null;
+
           return {
             cardId: cardModel.id,
-            boardId: cardModel.boardId,
+            boardId: boardModel ? boardModel.id : cardModel.boardId,
             projectId: cardModel.board.projectId,
           };
         }
@@ -85,6 +101,7 @@ export const selectPath = createReduxOrmSelector(
 
 export default {
   selectPathname,
+  selectLocationState,
   selectPathsMatch,
   selectPath,
 };

@@ -200,11 +200,37 @@ module.exports = {
       }
     }
 
+    let dataBoard = board;
+    if (board.sourceBoardId) {
+      dataBoard = await Board.qm.getOneById(board.sourceBoardId);
+
+      if (!dataBoard || dataBoard.projectId !== project.id) {
+        throw Errors.BOARD_NOT_FOUND;
+      }
+
+      const isProjectManager = await sails.helpers.users.isProjectManager(
+        currentUser.id,
+        project.id,
+      );
+      if (
+        !isProjectManager &&
+        !(await sails.helpers.users.isBoardMember(currentUser.id, dataBoard.id))
+      ) {
+        throw Errors.BOARD_NOT_FOUND;
+      }
+    }
+
     board.isSubscribed = await sails.helpers.users.isBoardSubscriber(currentUser.id, board.id);
 
-    const boardMemberships = await BoardMembership.qm.getByBoardId(board.id);
-    const labels = await Label.qm.getByBoardId(board.id);
-    const lists = await List.qm.getByBoardId(board.id);
+    const boardMemberships = [
+      ...(await BoardMembership.qm.getByBoardId(board.id)),
+      ...(dataBoard.id !== board.id
+        ? await BoardMembership.qm.getByBoardId(dataBoard.id)
+        : []),
+    ];
+    const labels = await Label.qm.getByBoardId(dataBoard.id);
+    const lists = await List.qm.getByBoardId(dataBoard.id);
+
 
     const finiteLists = lists.filter((list) => sails.helpers.lists.isFinite(list));
     const finiteListIds = sails.helpers.utils.mapRecords(finiteLists);
@@ -227,7 +253,7 @@ module.exports = {
     const tasks = await Task.qm.getByTaskListIds(taskListIds);
     const attachments = await Attachment.qm.getByCardIds(cardIds);
 
-    const boardCustomFieldGroups = await CustomFieldGroup.qm.getByBoardId(board.id);
+    const boardCustomFieldGroups = await CustomFieldGroup.qm.getByBoardId(dataBoard.id);
     const cardCustomFieldGroups = await CustomFieldGroup.qm.getByCardIds(cardIds);
 
     const customFieldGroups = [...boardCustomFieldGroups, ...cardCustomFieldGroups];
@@ -256,6 +282,9 @@ module.exports = {
 
     if (inputs.subscribe && this.req.isSocket) {
       sails.sockets.join(this.req, `board:${board.id}`);
+      if (dataBoard.id !== board.id) {
+        sails.sockets.join(this.req, `board:${dataBoard.id}`);
+      }
     }
 
     return {

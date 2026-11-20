@@ -60,6 +60,13 @@ export const BoardViews = {
   KANBAN: 'kanban',
   GRID: 'grid',
   LIST: 'list',
+  TIMELINE: 'timeline',
+  CALENDAR: 'calendar',
+};
+
+export const BoardViewColorModes = {
+  COLUMN: 'column',
+  CUSTOM: 'custom',
 };
 
 export const BoardContexts = {

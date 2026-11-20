@@ -4,17 +4,26 @@
  */
 
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { Divider, Header, Tab } from 'semantic-ui-react';
 
 import DefaultView from './DefaultView';
 import DefaultCardType from './DefaultCardType';
 import Others from './Others';
+import ViewSettings from './ViewSettings';
+import selectors from '../../../../selectors';
+import { BoardViews } from '../../../../constants/Enums';
 
 import styles from './PreferencesPane.module.scss';
 
 const PreferencesPane = React.memo(() => {
   const [t] = useTranslation();
+  const board = useSelector(selectors.selectCurrentBoard);
+
+  if ([BoardViews.TIMELINE, BoardViews.CALENDAR].includes(board.defaultView)) {
+    return <ViewSettings />;
+  }
 
   return (
     <Tab.Pane attached={false} className={styles.wrapper}>

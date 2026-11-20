@@ -31,28 +31,31 @@ const RightSide = React.memo(() => {
   const ActionsPopup = usePopup(ActionsStep);
 
   const views = [BoardViews.GRID, BoardViews.LIST];
-  if (board.context === BoardContexts.BOARD) {
+  const isDerivedView = [BoardViews.TIMELINE, BoardViews.CALENDAR].includes(board.view);
+  if (board.context === BoardContexts.BOARD && !isDerivedView) {
     views.unshift(BoardViews.KANBAN);
   }
 
   return (
     <>
-      <div className={styles.action}>
-        <div className={styles.buttonGroup}>
-          {views.map((view) => (
-            <button
-              key={view}
-              type="button"
-              value={view}
-              disabled={view === board.view}
-              className={styles.button}
-              onClick={handleSelectViewClick}
-            >
-              <Icon fitted name={BoardViewIcons[view]} />
-            </button>
-          ))}
+      {!isDerivedView && (
+        <div className={styles.action}>
+          <div className={styles.buttonGroup}>
+            {views.map((view) => (
+              <button
+                key={view}
+                type="button"
+                value={view}
+                disabled={view === board.view}
+                className={styles.button}
+                onClick={handleSelectViewClick}
+              >
+                <Icon fitted name={BoardViewIcons[view]} />
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
       <div className={styles.action}>
         <ActionsPopup>
           <button type="button" className={styles.button}>

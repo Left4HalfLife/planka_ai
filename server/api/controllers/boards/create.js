@@ -49,6 +49,12 @@
  *                 type: string
  *                 format: binary
  *                 description: Import file
+ *               defaultView:
+ *                 type: string
+ *                 enum: [kanban, grid, list, timeline, calendar]
+ *               sourceBoardId:
+ *                 type: string
+ *                 description: Board that supplies cards to a timeline or calendar
  *               requestId:
  *                 type: string
  *                 maxLength: 128
@@ -117,6 +123,9 @@ const Errors = {
   INVALID_IMPORT_FILE: {
     invalidImportFile: 'Invalid import file',
   },
+  INVALID_SOURCE_BOARD: {
+    invalidSourceBoard: 'Invalid source board',
+  },
 };
 
 module.exports = {
@@ -134,6 +143,13 @@ module.exports = {
       type: 'string',
       maxLength: 128,
       required: true,
+    },
+    defaultView: {
+      type: 'string',
+      isIn: Object.values(Board.Views),
+    },
+    sourceBoardId: {
+      ...idInput,
     },
     importType: {
       type: 'string',
@@ -156,6 +172,9 @@ module.exports = {
     invalidImportFile: {
       responseType: 'unprocessableEntity',
     },
+    invalidSourceBoard: {
+      responseType: 'unprocessableEntity',
+    },
     uploadError: {
       responseType: 'unprocessableEntity',
     },
@@ -174,6 +193,26 @@ module.exports = {
 
     if (!isProjectManager) {
       throw Errors.PROJECT_NOT_FOUND; // Forbidden
+    }
+
+    const isDerivedView = [Board.Views.TIMELINE, Board.Views.CALENDAR].includes(
+      inputs.defaultView,
+    );
+
+    if (isDerivedView !== !!inputs.sourceBoardId || (isDerivedView && inputs.importType)) {
+      throw Errors.INVALID_SOURCE_BOARD;
+    }
+
+    if (inputs.sourceBoardId) {
+      const sourceBoard = await Board.qm.getOneById(inputs.sourceBoardId);
+
+      if (
+        !sourceBoard ||
+        sourceBoard.projectId !== project.id ||
+        [Board.Views.TIMELINE, Board.Views.CALENDAR].includes(sourceBoard.defaultView)
+      ) {
+        throw Errors.INVALID_SOURCE_BOARD;
+      }
     }
 
     let boardImport;
@@ -203,7 +242,7 @@ module.exports = {
       }
     }
 
-    const values = _.pick(inputs, ['position', 'name']);
+    const values = _.pick(inputs, ['position', 'name', 'defaultView', 'sourceBoardId']);
 
     const { board, boardMembership } = await sails.helpers.boards.createOne.with({
       values: {

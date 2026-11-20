@@ -13,7 +13,7 @@ import { Popup } from '../../../../lib/custom-ui';
 import selectors from '../../../../selectors';
 import entryActions from '../../../../entry-actions';
 import { useSteps } from '../../../../hooks';
-import { BoardContexts, BoardMembershipRoles } from '../../../../constants/Enums';
+import { BoardContexts, BoardMembershipRoles, BoardViews } from '../../../../constants/Enums';
 import { BoardContextIcons } from '../../../../constants/Icons';
 import ConfirmationStep from '../../../common/ConfirmationStep';
 import CustomFieldGroupsStep from '../../../custom-field-groups/CustomFieldGroupsStep';
@@ -27,6 +27,7 @@ const StepTypes = {
 
 const ActionsStep = React.memo(({ onClose }) => {
   const board = useSelector(selectors.selectCurrentBoard);
+  const isDerivedView = [BoardViews.TIMELINE, BoardViews.CALENDAR].includes(board.defaultView);
 
   const { withSubscribe, withCustomFieldGroups, withTrashEmptier } = useSelector((state) => {
     const isManager = selectors.selectIsCurrentUserManagerForCurrentProject(state);
@@ -42,7 +43,7 @@ const ActionsStep = React.memo(({ onClose }) => {
 
     return {
       withSubscribe: isMember, // TODO: rename?
-      withCustomFieldGroups: isEditor,
+      withCustomFieldGroups: isEditor && !isDerivedView,
       withTrashEmptier: board.context === BoardContexts.TRASH && (isManager || isEditor),
     };
   }, shallowEqual);
@@ -150,21 +151,23 @@ const ActionsStep = React.memo(({ onClose }) => {
               </Menu.Item>
             </>
           )}
-          <>
-            <hr className={styles.divider} />
-            {[BoardContexts.BOARD, BoardContexts.ARCHIVE, BoardContexts.TRASH].map((context) => (
-              <Menu.Item
-                key={context}
-                value={context}
-                active={context === board.context}
-                className={styles.menuItem}
-                onClick={handleSelectContextClick}
-              >
-                <Icon name={BoardContextIcons[context]} className={styles.menuItemIcon} />
-                {t(`common.${context}`)}
-              </Menu.Item>
-            ))}
-          </>
+          {!isDerivedView && (
+            <>
+              <hr className={styles.divider} />
+              {[BoardContexts.BOARD, BoardContexts.ARCHIVE, BoardContexts.TRASH].map((context) => (
+                <Menu.Item
+                  key={context}
+                  value={context}
+                  active={context === board.context}
+                  className={styles.menuItem}
+                  onClick={handleSelectContextClick}
+                >
+                  <Icon name={BoardContextIcons[context]} className={styles.menuItemIcon} />
+                  {t(`common.${context}`)}
+                </Menu.Item>
+              ))}
+            </>
+          )}
         </Menu>
       </Popup.Content>
     </>

@@ -32,8 +32,10 @@ export function* goToBoard(boardId) {
   yield call(goTo, Paths.BOARDS.replace(':id', boardId));
 }
 
-export function* goToCard(cardId) {
-  yield call(goTo, Paths.CARDS.replace(':id', cardId));
+export function* goToCard(cardId, returnBoardId) {
+  yield put(
+    push(Paths.CARDS.replace(':id', cardId), returnBoardId ? { returnBoardId } : undefined),
+  );
 }
 
 export function* handleLocationChange() {

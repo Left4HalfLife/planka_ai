@@ -27,6 +27,7 @@
  *         - alwaysDisplayCardCreator
  *         - displayCardAges
  *         - expandTaskListsByDefault
+ *         - viewColorMode
  *         - createdAt
  *         - updatedAt
  *       properties:
@@ -48,7 +49,7 @@
  *           example: Development Board
  *         defaultView:
  *           type: string
- *           enum: [kanban, grid, list]
+ *           enum: [kanban, grid, list, timeline, calendar]
  *           default: kanban
  *           description: Default view for the board
  *           example: kanban
@@ -78,6 +79,18 @@
  *           default: false
  *           description: Whether to expand task lists by default
  *           example: false
+ *         sourceBoardId:
+ *           type: string
+ *           nullable: true
+ *           description: Source board used by timeline and calendar views
+ *         viewColorMode:
+ *           type: string
+ *           enum: [column, custom]
+ *           default: column
+ *         viewColors:
+ *           type: object
+ *           additionalProperties:
+ *             type: string
  *         createdAt:
  *           type: string
  *           format: date-time
@@ -98,6 +111,13 @@ const Views = {
   KANBAN: 'kanban',
   GRID: 'grid',
   LIST: 'list',
+  TIMELINE: 'timeline',
+  CALENDAR: 'calendar',
+};
+
+const ViewColorModes = {
+  COLUMN: 'column',
+  CUSTOM: 'custom',
 };
 
 const ImportTypes = {
@@ -106,6 +126,7 @@ const ImportTypes = {
 
 module.exports = {
   Views,
+  ViewColorModes,
   ImportTypes,
 
   attributes: {
@@ -153,6 +174,17 @@ module.exports = {
       defaultsTo: false,
       columnName: 'expand_task_lists_by_default',
     },
+    viewColorMode: {
+      type: 'string',
+      isIn: Object.values(ViewColorModes),
+      defaultsTo: ViewColorModes.COLUMN,
+      columnName: 'view_color_mode',
+    },
+    viewColors: {
+      type: 'json',
+      defaultsTo: {},
+      columnName: 'view_colors',
+    },
 
     //  ╔═╗╔╦╗╔╗ ╔═╗╔╦╗╔═╗
     //  ║╣ ║║║╠╩╗║╣  ║║╚═╗
@@ -166,6 +198,10 @@ module.exports = {
       model: 'Project',
       required: true,
       columnName: 'project_id',
+    },
+    sourceBoardId: {
+      model: 'Board',
+      columnName: 'source_board_id',
     },
     memberUsers: {
       collection: 'User',

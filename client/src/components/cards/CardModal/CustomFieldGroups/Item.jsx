@@ -36,7 +36,7 @@ const Item = React.memo(({ id, dragHandleProps }) => {
       return false;
     }
 
-    const boardMembership = selectors.selectCurrentUserMembershipForCurrentBoard(state);
+    const boardMembership = selectors.selectCurrentUserMembershipForCurrentCardBoard(state);
     return !!boardMembership && boardMembership.role === BoardMembershipRoles.EDITOR;
   });
 

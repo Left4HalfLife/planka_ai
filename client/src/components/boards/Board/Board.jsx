@@ -12,6 +12,8 @@ import { BoardContexts, BoardViews } from '../../../constants/Enums';
 import KanbanContent from './KanbanContent';
 import FiniteContent from './FiniteContent';
 import EndlessContent from './EndlessContent';
+import TimelineContent from './TimelineContent';
+import CalendarContent from './CalendarContent';
 import ShortcutsProvider from './ShortcutsProvider';
 import CardModal from '../../cards/CardModal';
 import BoardActivitiesModal from '../../activities/BoardActivitiesModal';
@@ -20,23 +22,35 @@ const Board = React.memo(() => {
   const board = useSelector(selectors.selectCurrentBoard);
   const modal = useSelector(selectors.selectCurrentModal);
   const isCardModalOpened = useSelector((state) => !!selectors.selectPath(state).cardId);
+  const isDerivedView = [BoardViews.TIMELINE, BoardViews.CALENDAR].includes(board.view);
 
   let Content;
-  if (board.view === BoardViews.KANBAN) {
-    Content = KanbanContent;
-  } else {
-    switch (board.context) {
-      case BoardContexts.BOARD:
-        Content = FiniteContent;
+  switch (board.view) {
+    case BoardViews.KANBAN:
+      Content = KanbanContent;
 
-        break;
-      case BoardContexts.ARCHIVE:
-      case BoardContexts.TRASH:
-        Content = EndlessContent;
+      break;
+    case BoardViews.TIMELINE:
+      Content = TimelineContent;
 
-        break;
-      default:
-    }
+      break;
+    case BoardViews.CALENDAR:
+      Content = CalendarContent;
+
+      break;
+    default:
+      switch (board.context) {
+        case BoardContexts.BOARD:
+          Content = FiniteContent;
+
+          break;
+        case BoardContexts.ARCHIVE:
+        case BoardContexts.TRASH:
+          Content = EndlessContent;
+
+          break;
+        default:
+      }
   }
 
   let modalNode = null;
@@ -54,9 +68,13 @@ const Board = React.memo(() => {
 
   return (
     <>
-      <ShortcutsProvider>
+      {isDerivedView ? (
         <Content />
-      </ShortcutsProvider>
+      ) : (
+        <ShortcutsProvider>
+          <Content />
+        </ShortcutsProvider>
+      )}
       {modalNode}
     </>
   );

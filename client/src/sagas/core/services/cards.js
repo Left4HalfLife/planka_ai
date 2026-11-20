@@ -713,7 +713,8 @@ export function* goToAdjacentCard(direction) {
   const adjacentCardId = cardIds[index + direction];
 
   if (adjacentCardId) {
-    yield call(goToCard, adjacentCardId);
+    const locationState = yield select(selectors.selectLocationState);
+    yield call(goToCard, adjacentCardId, locationState?.returnBoardId);
   }
 }
 

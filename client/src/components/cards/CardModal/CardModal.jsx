@@ -32,6 +32,8 @@ const CardModal = React.memo(() => {
 
   const card = useSelector(selectors.selectCurrentCard);
   const prevCardId = useSelector(selectors.selectPrevCardId);
+  const path = useSelector(selectors.selectPath);
+  const locationState = useSelector(selectors.selectLocationState);
 
   const canEdit = useSelector((state) => {
     const list = selectListById(state, card.listId);
@@ -40,19 +42,23 @@ const CardModal = React.memo(() => {
       return false;
     }
 
-    const boardMembership = selectors.selectCurrentUserMembershipForCurrentBoard(state);
+    const boardMembership = selectors.selectCurrentUserMembershipForCurrentCardBoard(state);
     return !!boardMembership && boardMembership.role === BoardMembershipRoles.EDITOR;
   });
 
   const dispatch = useDispatch();
 
   const handleClose = useCallback(() => {
-    dispatch(push(Paths.BOARDS.replace(':id', card.boardId)));
-  }, [card.boardId, dispatch]);
+    dispatch(push(Paths.BOARDS.replace(':id', locationState?.returnBoardId || path.boardId)));
+  }, [locationState, path.boardId, dispatch]);
 
   const handlePrevClick = useCallback(() => {
-    dispatch(push(Paths.CARDS.replace(':id', prevCardId)));
-  }, [prevCardId, dispatch]);
+    dispatch(
+      push(Paths.CARDS.replace(':id', prevCardId), {
+        returnBoardId: locationState?.returnBoardId,
+      }),
+    );
+  }, [locationState, prevCardId, dispatch]);
 
   const [ClosableModal, isClosableActiveRef] = useClosableModal();
 

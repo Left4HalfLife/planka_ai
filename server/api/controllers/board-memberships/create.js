@@ -148,6 +148,18 @@ module.exports = {
       throw Errors.USER_NOT_FOUND;
     }
 
+    if (board.sourceBoardId) {
+      const isUserProjectManager = await sails.helpers.users.isProjectManager(user.id, project.id);
+      const isSourceBoardMember = await sails.helpers.users.isBoardMember(
+        user.id,
+        board.sourceBoardId,
+      );
+
+      if (!isUserProjectManager && !isSourceBoardMember) {
+        throw Errors.USER_NOT_FOUND;
+      }
+    }
+
     const values = _.pick(inputs, ['role', 'canComment']);
 
     const boardMembership = await sails.helpers.boardMemberships.createOne

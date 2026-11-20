@@ -1,0 +1,121 @@
+/*!
+ * Copyright (c) 2024 PLANKA Software GmbH
+ * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
+ */
+
+:global(#app) {
+  .cardBar {
+    border: 0;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    color: #fff;
+    cursor: pointer;
+    font-size: 12px;
+    height: 30px;
+    min-width: 24px;
+    overflow: hidden;
+    padding: 6px 8px;
+    position: absolute;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    z-index: 1;
+  }
+
+  .day {
+    align-items: center;
+    border-right: 1px solid #d9dee2;
+    display: flex;
+    flex: 0 0 38px;
+    flex-direction: column;
+    font-size: 10px;
+    height: 48px;
+    justify-content: center;
+
+    strong {
+      font-size: 13px;
+    }
+  }
+
+  .days {
+    display: flex;
+  }
+
+  .empty {
+    align-items: center;
+    color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    font-size: 16px;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .header,
+  .stream {
+    display: flex;
+  }
+
+  .header {
+    background: rgba(244, 246, 247, 0.98);
+    border-radius: 3px 3px 0 0;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  .scroller {
+    background: rgba(223, 227, 230, 0.94);
+    border-radius: 3px;
+    height: 100%;
+    overflow: auto;
+  }
+
+  .stream {
+    border-top: 1px solid #d9dee2;
+  }
+
+  .streamHeader,
+  .streamName {
+    background: #f4f6f7;
+    flex: 0 0 190px;
+    font-weight: 600;
+    padding: 14px;
+    position: sticky;
+    left: 0;
+    z-index: 1;
+  }
+
+  .streamName {
+    align-items: flex-start;
+    display: flex;
+    gap: 8px;
+    overflow-wrap: anywhere;
+  }
+
+  .swatch {
+    border-radius: 50%;
+    flex: 0 0 10px;
+    height: 10px;
+    margin-top: 4px;
+    width: 10px;
+  }
+
+  .timeline {
+    min-height: 100%;
+  }
+
+  .track {
+    background-image: linear-gradient(to right, transparent 37px, #dfe3e6 38px);
+    flex: none;
+    position: relative;
+  }
+
+  .wrapper {
+    box-sizing: border-box;
+    height: 100%;
+    overflow: hidden;
+    padding: 0 20px 20px;
+    width: 100%;
+  }
+}

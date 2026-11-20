@@ -22,14 +22,17 @@ const createOne = (values, { user } = {}) =>
       .fetch()
       .usingConnection(db);
 
-    const lists = await List.createEach(
-      [List.Types.ARCHIVE, List.Types.TRASH].map((type) => ({
-        type,
-        boardId: board.id,
-      })),
-    )
-      .fetch()
-      .usingConnection(db);
+    let lists = [];
+    if (!values.sourceBoardId) {
+      lists = await List.createEach(
+        [List.Types.ARCHIVE, List.Types.TRASH].map((type) => ({
+          type,
+          boardId: board.id,
+        })),
+      )
+        .fetch()
+        .usingConnection(db);
+    }
 
     return { board, boardMembership, lists };
   });
@@ -70,6 +73,11 @@ const getByProjectIds = (projectIds, { sort = ['position', 'id'] } = {}) =>
     { sort },
   );
 
+const getBySourceBoardId = (sourceBoardId) =>
+  defaultFind({
+    sourceBoardId,
+  });
+
 const getOneById = (id) => Board.findOne(id);
 
 const updateOne = (criteria, values) => Board.updateOne(criteria).set({ ...values });
@@ -84,6 +92,7 @@ module.exports = {
   getByIds,
   getByProjectId,
   getByProjectIds,
+  getBySourceBoardId,
   getOneById,
   updateOne,
   deleteOne,

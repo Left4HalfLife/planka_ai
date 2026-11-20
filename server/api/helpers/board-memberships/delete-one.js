@@ -66,12 +66,12 @@ module.exports = {
     const boardMembership = await BoardMembership.qm.deleteOne(inputs.record.id);
 
     if (boardMembership) {
-      if (inputs.user.role !== User.Roles.ADMIN || inputs.project.ownerProjectManagerId) {
-        const isProjectManager = await sails.helpers.users.isProjectManager(
-          boardMembership.userId,
-          inputs.project.id,
-        );
+      const isProjectManager = await sails.helpers.users.isProjectManager(
+        boardMembership.userId,
+        inputs.project.id,
+      );
 
+      if (inputs.user.role !== User.Roles.ADMIN || inputs.project.ownerProjectManagerId) {
         if (!isProjectManager) {
           sails.sockets.removeRoomMembersFromRooms(
             `@user:${boardMembership.userId}`,
@@ -121,6 +121,31 @@ module.exports = {
         }),
         user: inputs.actorUser,
       });
+
+      if (!isProjectManager) {
+        const dependentViews = await Board.qm.getBySourceBoardId(boardMembership.boardId);
+
+        // eslint-disable-next-line no-restricted-syntax
+        for (const dependentView of dependentViews) {
+          // eslint-disable-next-line no-await-in-loop
+          const dependentMembership = await BoardMembership.qm.getOneByBoardIdAndUserId(
+            dependentView.id,
+            boardMembership.userId,
+          );
+
+          if (dependentMembership) {
+            // eslint-disable-next-line no-await-in-loop
+            await sails.helpers.boardMemberships.deleteOne.with({
+              record: dependentMembership,
+              user: inputs.user,
+              project: inputs.project,
+              board: dependentView,
+              actorUser: inputs.actorUser,
+              request: inputs.request,
+            });
+          }
+        }
+      }
     }
 
     return boardMembership;

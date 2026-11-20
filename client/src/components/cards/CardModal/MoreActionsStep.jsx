@@ -34,7 +34,7 @@ const MoreActionsStep = React.memo(({ onClose }) => {
   const { canEditType, canDuplicate, canMove } = useSelector((state) => {
     const list = selectListById(state, card.listId);
 
-    const boardMembership = selectors.selectCurrentUserMembershipForCurrentBoard(state);
+    const boardMembership = selectors.selectCurrentUserMembershipForCurrentCardBoard(state);
     const isEditor = !!boardMembership && boardMembership.role === BoardMembershipRoles.EDITOR;
 
     if (isListArchiveOrTrash(list)) {

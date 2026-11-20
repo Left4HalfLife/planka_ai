@@ -13,6 +13,7 @@ import Favorites from '../Favorites';
 import HomeActions from '../HomeActions';
 import Project from '../../projects/Project';
 import BoardActions from '../../boards/BoardActions';
+import ProjectAssistant from '../../projects/ProjectAssistant';
 
 import styles from './Fixed.module.scss';
 
@@ -28,6 +29,7 @@ const Fixed = React.memo(() => {
       {projectId === undefined && <HomeActions />}
       {projectId && <Project />}
       {board && !board.isFetching && <BoardActions />}
+      {projectId && <ProjectAssistant />}
     </div>
   );
 });

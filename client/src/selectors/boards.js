@@ -237,13 +237,14 @@ export const selectArchiveListIdForCurrentBoard = createSelector(
       return boardModel;
     }
 
-    const listModel = boardModel.lists
+    const listModel = boardModel
+      .getListsQuerySet()
       .filter({
         type: ListTypes.ARCHIVE,
       })
       .first();
 
-    return listModel.id;
+    return listModel && listModel.id;
   },
 );
 
@@ -261,13 +262,34 @@ export const selectTrashListIdForCurrentBoard = createSelector(
       return boardModel;
     }
 
-    const listModel = boardModel.lists
+    const listModel = boardModel
+      .getListsQuerySet()
       .filter({
         type: ListTypes.TRASH,
       })
       .first();
 
-    return listModel.id;
+    return listModel && listModel.id;
+  },
+);
+
+export const selectCurrentUserMembershipForCurrentCardBoard = createSelector(
+  orm,
+  (state) => selectPath(state).cardId,
+  (state) => selectCurrentUserId(state),
+  ({ Card }, cardId, currentUserId) => {
+    if (!cardId) {
+      return cardId;
+    }
+
+    const cardModel = Card.withId(cardId);
+
+    if (!cardModel || !cardModel.list || !cardModel.list.board) {
+      return undefined;
+    }
+
+    const boardMembershipModel = cardModel.list.board.getMembershipModelByUserId(currentUserId);
+    return boardMembershipModel && boardMembershipModel.ref;
   },
 );
 
@@ -351,6 +373,30 @@ export const selectFilteredCardIdsForCurrentBoard = createSelector(
     }
 
     return boardModel.getFilteredCardsModelArray().map((cardModel) => cardModel.id);
+  },
+);
+
+export const selectViewDataForCurrentBoard = createSelector(
+  orm,
+  (state) => selectPath(state).boardId,
+  ({ Board }, id) => {
+    if (!id) {
+      return id;
+    }
+
+    const boardModel = Board.withId(id);
+
+    if (!boardModel) {
+      return boardModel;
+    }
+
+    const dataBoardModel = boardModel.sourceBoard || boardModel;
+
+    return {
+      boardId: dataBoardModel.id,
+      lists: dataBoardModel.getKanbanListsQuerySet().toRefArray(),
+      cards: boardModel.getFilteredCardsModelArray().map((cardModel) => cardModel.ref),
+    };
   },
 );
 
@@ -479,6 +525,7 @@ export default {
   selectMembershipsForCurrentBoard,
   selectMemberUserIdsForCurrentBoard,
   selectCurrentUserMembershipForCurrentBoard,
+  selectCurrentUserMembershipForCurrentCardBoard,
   selectLabelsForCurrentBoard,
   selectArchiveListIdForCurrentBoard,
   selectTrashListIdForCurrentBoard,
@@ -486,6 +533,7 @@ export default {
   selectAvailableListsForCurrentBoard,
   selectCardsExceptCurrentForCurrentBoard,
   selectFilteredCardIdsForCurrentBoard,
+  selectViewDataForCurrentBoard,
   selectCustomFieldGroupIdsForCurrentBoard,
   selectCustomFieldGroupsForCurrentBoard,
   selectActivityIdsForCurrentBoard,

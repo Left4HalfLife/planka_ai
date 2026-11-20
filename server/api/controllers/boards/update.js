@@ -39,7 +39,7 @@
  *                 example: Development Board
  *               defaultView:
  *                 type: string
- *                 enum: [kanban, grid, list]
+ *                 enum: [kanban, grid, list, timeline, calendar]
  *                 description: Default view for the board
  *                 example: kanban
  *               defaultCardType:
@@ -63,6 +63,11 @@
  *                 type: boolean
  *                 description: Whether to expand task lists by default
  *                 example: false
+ *               viewColorMode:
+ *                 type: string
+ *                 enum: [column, custom]
+ *               viewColors:
+ *                 type: object
  *               isSubscribed:
  *                 type: boolean
  *                 description: Whether the current user is subscribed to the board
@@ -92,6 +97,9 @@ const { idInput } = require('../../../utils/inputs');
 const Errors = {
   BOARD_NOT_FOUND: {
     boardNotFound: 'Board not found',
+  },
+  INVALID_VIEW_CONFIGURATION: {
+    invalidViewConfiguration: 'Invalid view configuration',
   },
 };
 
@@ -130,6 +138,13 @@ module.exports = {
     expandTaskListsByDefault: {
       type: 'boolean',
     },
+    viewColorMode: {
+      type: 'string',
+      isIn: Object.values(Board.ViewColorModes),
+    },
+    viewColors: {
+      type: 'json',
+    },
     isSubscribed: {
       type: 'boolean',
     },
@@ -138,6 +153,9 @@ module.exports = {
   exits: {
     boardNotFound: {
       responseType: 'notFound',
+    },
+    invalidViewConfiguration: {
+      responseType: 'unprocessableEntity',
     },
   },
 
@@ -169,6 +187,8 @@ module.exports = {
         'alwaysDisplayCardCreator',
         'displayCardAges',
         'expandTaskListsByDefault',
+        'viewColorMode',
+        'viewColors',
       );
     }
     if (isBoardMember) {
@@ -177,6 +197,15 @@ module.exports = {
 
     if (_.difference(Object.keys(inputs), availableInputKeys).length > 0) {
       throw Errors.NOT_ENOUGH_RIGHTS;
+    }
+
+    if (
+      inputs.defaultView &&
+      (board.sourceBoardId
+        ? inputs.defaultView !== board.defaultView
+        : [Board.Views.TIMELINE, Board.Views.CALENDAR].includes(inputs.defaultView))
+    ) {
+      throw Errors.INVALID_VIEW_CONFIGURATION;
     }
 
     const values = _.pick(inputs, [
@@ -188,6 +217,8 @@ module.exports = {
       'alwaysDisplayCardCreator',
       'displayCardAges',
       'expandTaskListsByDefault',
+      'viewColorMode',
+      'viewColors',
       'isSubscribed',
     ]);
 

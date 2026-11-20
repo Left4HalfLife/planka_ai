@@ -20,8 +20,16 @@ const MoveCardStep = React.memo(({ id, onBack, onClose }) => {
   const selectCardById = useMemo(() => selectors.makeSelectCardById(), []);
   const selectBoardById = useMemo(() => selectors.makeSelectBoardById(), []);
 
-  const projectsToLists = useSelector(
+  const allProjectsToLists = useSelector(
     selectors.selectProjectsToListsWithEditorRightsForCurrentUser,
+  );
+  const projectsToLists = useMemo(
+    () =>
+      allProjectsToLists.map((project) => ({
+        ...project,
+        boards: project.boards.filter((board) => !board.sourceBoardId),
+      })),
+    [allProjectsToLists],
   );
 
   const card = useSelector((state) => selectCardById(state, id));

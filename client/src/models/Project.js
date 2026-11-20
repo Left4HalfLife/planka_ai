@@ -195,11 +195,11 @@ export default class extends BaseModel {
   }
 
   getBoardsModelArrayAvailableForUser(userModel) {
-    if (this.isExternalAccessibleForUser(userModel)) {
-      return this.getBoardsQuerySet().toModelArray();
-    }
+    const boards = this.isExternalAccessibleForUser(userModel)
+      ? this.getBoardsQuerySet().toModelArray()
+      : this.getBoardsModelArrayForUserWithId(userModel.id);
 
-    return this.getBoardsModelArrayForUserWithId(userModel.id);
+    return boards.filter((boardModel) => boardModel.isAvailableForUser(userModel));
   }
 
   hasManagerWithUserId(userId) {

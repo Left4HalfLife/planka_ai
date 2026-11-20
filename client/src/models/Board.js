@@ -20,6 +20,14 @@ const prepareFetchedBoard = (board) => ({
   search: '',
 });
 
+const prepareCreatedBoard = (board) => ({
+  ...board,
+  isFetching: null,
+  context: BoardContexts.BOARD,
+  view: board.defaultView,
+  search: '',
+});
+
 export default class extends BaseModel {
   static modelName = 'Board';
 
@@ -28,6 +36,15 @@ export default class extends BaseModel {
     position: attr(),
     name: attr(),
     defaultView: attr(),
+    sourceBoardId: fk({
+      to: 'Board',
+      as: 'sourceBoard',
+      relatedName: 'dependentViews',
+    }),
+    viewColorMode: attr(),
+    viewColors: attr({
+      getDefault: () => ({}),
+    }),
     defaultCardType: attr(),
     limitCardTypesToDefaultOne: attr(),
     alwaysDisplayCardCreator: attr(),
@@ -186,16 +203,19 @@ export default class extends BaseModel {
         }
 
         break;
-      case ActionTypes.BOARD_CREATE:
-      case ActionTypes.BOARD_CREATE_HANDLE:
       case ActionTypes.BOARD_UPDATE__SUCCESS:
       case ActionTypes.BOARD_UPDATE_HANDLE:
         Board.upsert(payload.board);
 
         break;
+      case ActionTypes.BOARD_CREATE:
+      case ActionTypes.BOARD_CREATE_HANDLE:
+        Board.upsert(prepareCreatedBoard(payload.board));
+
+        break;
       case ActionTypes.BOARD_CREATE__SUCCESS:
         Board.withId(payload.localId).delete();
-        Board.upsert(payload.board);
+        Board.upsert(prepareCreatedBoard(payload.board));
 
         break;
       case ActionTypes.BOARD_CREATE__FAILURE:
@@ -278,12 +298,18 @@ export default class extends BaseModel {
     return this.memberships.orderBy(['id.length', 'id']);
   }
 
+  getDataBoardModel() {
+    return this.sourceBoardId ? this.sourceBoard : this;
+  }
+
   getLabelsQuerySet() {
-    return this.labels.orderBy(['position', 'id.length', 'id']);
+    const dataBoardModel = this.getDataBoardModel() || this;
+    return dataBoardModel.labels.orderBy(['position', 'id.length', 'id']);
   }
 
   getListsQuerySet() {
-    return this.lists.orderBy(['position', 'id.length', 'id']);
+    const dataBoardModel = this.getDataBoardModel() || this;
+    return dataBoardModel.lists.orderBy(['position', 'id.length', 'id']);
   }
 
   getKanbanListsQuerySet() {
@@ -291,7 +317,8 @@ export default class extends BaseModel {
   }
 
   getCustomFieldGroupsQuerySet() {
-    return this.customFieldGroups.orderBy(['position', 'id.length', 'id']);
+    const dataBoardModel = this.getDataBoardModel() || this;
+    return dataBoardModel.customFieldGroups.orderBy(['position', 'id.length', 'id']);
   }
 
   getActivitiesQuerySet() {
@@ -317,7 +344,14 @@ export default class extends BaseModel {
   }
 
   getCardsModelArray() {
-    return this.getKanbanListsQuerySet()
+    const dataBoardModel = this.getDataBoardModel();
+
+    if (!dataBoardModel) {
+      return [];
+    }
+
+    return dataBoardModel
+      .getKanbanListsQuerySet()
       .toModelArray()
       .flatMap((listModel) => listModel.getCardsModelArray());
   }
@@ -427,6 +461,15 @@ export default class extends BaseModel {
   isAvailableForUser(userModel) {
     if (!this.project) {
       return false;
+    }
+
+    if (this.sourceBoardId) {
+      const sourceBoardModel = this.getDataBoardModel();
+      return (
+        !!sourceBoardModel &&
+        (this.project.hasManagerWithUserId(userModel.id) ||
+          sourceBoardModel.hasMembershipWithUserId(userModel.id))
+      );
     }
 
     return (
