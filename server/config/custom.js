@@ -30,6 +30,7 @@ const envToArray = (value) => (value ? value.split(',') : []);
 
 const baseUrl = envToArray(process.env.BASE_URL)[0];
 const parsedBasedUrl = new URL(baseUrl);
+const lmStudioEndpoint = process.env.ENDPOINT && process.env.ENDPOINT.replace(/\/+$/, '');
 
 module.exports.custom = {
   /**
@@ -64,6 +65,19 @@ module.exports.custom = {
   authRateLimitWindow: parseInt(process.env.AUTH_RATE_LIMIT_WINDOW, 10) || 60,
   authRateLimitMaxPerIp: parseInt(process.env.AUTH_RATE_LIMIT_MAX_PER_IP, 10) || 30,
   authRateLimitMaxPerIdentifier: parseInt(process.env.AUTH_RATE_LIMIT_MAX_PER_IDENTIFIER, 10) || 10,
+
+  // How many AI provider calls may run at once. Default of 1 assumes a single self-hosted
+  // model; a cloud provider built for concurrency can raise this.
+  aiMaxConcurrentRequests: parseInt(process.env.AI_MAX_CONCURRENT_REQUESTS, 10) || 1,
+  // How long a request waits for a free slot before it is told the assistant is busy.
+  aiBusyTimeout: parseInt(process.env.AI_BUSY_TIMEOUT, 10) || 30000,
+  // Ceiling on assistant messages, counted per user. Same in-process caveat as auth above.
+  aiChatRateLimitWindow: parseInt(process.env.AI_CHAT_RATE_LIMIT_WINDOW, 10) || 300,
+  aiChatRateLimitMax: parseInt(process.env.AI_CHAT_RATE_LIMIT_MAX, 10) || 20,
+  aiDefaultBaseUrl:
+    process.env.AI_BASE_URL || (lmStudioEndpoint && `${lmStudioEndpoint}/v1`) || null,
+  aiDefaultModel: process.env.AI_MODEL || process.env.LM_STUDIO_MODEL || null,
+  aiDefaultApiKey: process.env.AI_API_KEY || process.env.LM_STUDIO_API_KEY || null,
 
   storageLimit: envToBytes(process.env.STORAGE_LIMIT),
   activeUsersLimit: envToNumber(process.env.ACTIVE_USERS_LIMIT),

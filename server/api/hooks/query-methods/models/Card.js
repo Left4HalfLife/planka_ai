@@ -24,6 +24,31 @@ const getByBoardId = (boardId) =>
     boardId,
   });
 
+const getByBoardIdAndSearch = async (boardId, search, { limit = LIMIT } = {}) => {
+  const searchParts = buildSearchParts(search);
+
+  if (searchParts.length === 0) {
+    return [];
+  }
+
+  const queryValues = [boardId];
+
+  const ilikeValues = searchParts.map((searchPart) => {
+    queryValues.push(searchPart);
+    return `'%' || $${queryValues.length} || '%'`;
+  });
+
+  const query =
+    'SELECT card.* FROM card WHERE card.board_id = $1' +
+    ` AND ((card.name ILIKE ALL(ARRAY[${ilikeValues.join(', ')}]))` +
+    ` OR (card.description ILIKE ALL(ARRAY[${ilikeValues.join(', ')}])))` +
+    ` ORDER BY card.list_changed_at DESC, card.id DESC LIMIT ${limit}`;
+
+  const queryResult = await sails.sendNativeQuery(query, queryValues);
+
+  return queryResult.rows.map((row) => transformRowToModel(row));
+};
+
 const getByListId = async (listId, { exceptIdOrIds, sort = ['position', 'id'] } = {}) => {
   const criteria = {
     listId,
@@ -239,6 +264,7 @@ module.exports = {
   createOne,
   getByIds,
   getByBoardId,
+  getByBoardIdAndSearch,
   getByListId,
   getByEndlessListId,
   getByListIds,

@@ -54,6 +54,25 @@ const Item = React.memo(({ id }) => {
 
       break;
     }
+    case ActivityTypes.AI_ACTION:
+      contentNode = (
+        <Trans
+          i18nKey="common.plankaiDidSomethingOnBehalfOfUser"
+          values={{
+            user: userName,
+            triggeringUser: activity.data.triggeringUser.name,
+            summary: activity.data.summary,
+          }}
+        >
+          <span className={styles.author}>{userName}</span>
+          {' (requested by '}
+          {activity.data.triggeringUser.name}
+          {'): '}
+          {activity.data.summary}
+        </Trans>
+      );
+
+      break;
     case ActivityTypes.MOVE_CARD: {
       const { fromList, toList } = activity.data;
 

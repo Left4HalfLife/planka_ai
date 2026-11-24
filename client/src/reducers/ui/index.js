@@ -10,6 +10,9 @@ import userCreateForm from './user-create-form';
 import projectCreateForm from './project-create-form';
 import smtpTestState from './smtp-test-state';
 import userTrustedDevicesState from './user-trusted-devices-state';
+import aiModelsState from './ai-models-state';
+import aiCleanupState from './ai-cleanup-state';
+import aiMessagesState from './ai-messages-state';
 
 export default combineReducers({
   authenticateForm,
@@ -17,4 +20,7 @@ export default combineReducers({
   projectCreateForm,
   smtpTestState,
   userTrustedDevicesState,
+  aiModelsState,
+  aiCleanupState,
+  aiMessagesState,
 });

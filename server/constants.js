@@ -5,6 +5,9 @@ const AccessTokenSteps = {
 
 const POSITION_GAP = 65536;
 
+// Fixed id of the deactivated user that owns every mutation the AI assistant performs.
+const PLANKAI_USER_ID = '1';
+
 const MAX_SIZE_TO_GET_ENCODING = 8 * 1024 * 1024;
 const MAX_SIZE_TO_PROCESS_AS_IMAGE = 64 * 1024 * 1024;
 
@@ -14,6 +17,7 @@ const TRUST_DEVICE_EXPIRES_IN_DAYS = 30;
 module.exports = {
   AccessTokenSteps,
   POSITION_GAP,
+  PLANKAI_USER_ID,
   MAX_SIZE_TO_GET_ENCODING,
   MAX_SIZE_TO_PROCESS_AS_IMAGE,
   TRUST_DEVICE_COOKIE_NAME,

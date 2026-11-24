@@ -122,6 +122,41 @@ module.exports = {
       maxLength: 256,
       allowNull: true,
     },
+    aiIsEnabled: {
+      type: 'boolean',
+    },
+    aiBaseUrl: {
+      type: 'string',
+      isNotEmptyString: true,
+      maxLength: 2048,
+      allowNull: true,
+    },
+    aiModel: {
+      type: 'string',
+      isNotEmptyString: true,
+      maxLength: 256,
+      allowNull: true,
+    },
+    aiContextLimit: {
+      type: 'number',
+      min: 1,
+      allowNull: true,
+    },
+    aiConfidenceThresholdHigh: {
+      type: 'number',
+      min: 0,
+      max: 1,
+    },
+    aiConfidenceThresholdLow: {
+      type: 'number',
+      min: 0,
+      max: 1,
+    },
+    aiApiKey: {
+      type: 'string',
+      maxLength: 512,
+      allowNull: true,
+    },
   },
 
   async fn(inputs) {
@@ -136,7 +171,25 @@ module.exports = {
       'smtpUser',
       'smtpPassword',
       'smtpFrom',
+      'aiIsEnabled',
+      'aiBaseUrl',
+      'aiModel',
+      'aiContextLimit',
+      'aiConfidenceThresholdHigh',
+      'aiConfidenceThresholdLow',
     ]);
+
+    // Write-only: the key is only touched when a new one is supplied, so saving unrelated
+    // fields (which round-trip the redacted hint) cannot wipe or corrupt it.
+    if (!_.isUndefined(inputs.aiApiKey)) {
+      if (inputs.aiApiKey === null) {
+        values.aiApiKeyEncrypted = null;
+        values.aiApiKeyHint = null;
+      } else if (inputs.aiApiKey !== '') {
+        values.aiApiKeyEncrypted = sails.helpers.utils.encryptSecret(inputs.aiApiKey);
+        values.aiApiKeyHint = inputs.aiApiKey.slice(0, Math.floor(inputs.aiApiKey.length * 0.25));
+      }
+    }
 
     const config = await sails.helpers.config.updateMain.with({
       values,

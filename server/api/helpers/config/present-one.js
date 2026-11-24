@@ -14,14 +14,26 @@ module.exports = {
   },
 
   fn(inputs) {
+    const record = _.omit(inputs.record, Config.AI_SECRET_FIELD_NAMES);
+
+    if (!record.aiBaseUrl && sails.config.custom.aiDefaultBaseUrl) {
+      record.aiBaseUrl = sails.config.custom.aiDefaultBaseUrl;
+    }
+    if (!record.aiModel && sails.config.custom.aiDefaultModel) {
+      record.aiModel = sails.config.custom.aiDefaultModel;
+    }
+    if (!record.aiApiKeyHint && sails.config.custom.aiDefaultApiKey) {
+      record.aiApiKeyHint = 'Configured from environment';
+    }
+
     if (sails.config.custom.smtpHost) {
-      return _.omit(inputs.record, Config.SMTP_FIELD_NAMES);
+      return _.omit(record, Config.SMTP_FIELD_NAMES);
     }
 
-    if (inputs.record.smtpPassword) {
-      return _.omit(inputs.record, 'smtpPassword');
+    if (record.smtpPassword) {
+      return _.omit(record, 'smtpPassword');
     }
 
-    return inputs.record;
+    return record;
   },
 };

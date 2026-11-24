@@ -6,7 +6,8 @@
 import { StaticUserIds } from '../constants/StaticUsers';
 import { ListTypes, UserRoles } from '../constants/Enums';
 
-export const isUserStatic = (user) => [StaticUserIds.DELETED].includes(user.id);
+export const isUserStatic = (user) =>
+  [StaticUserIds.DELETED, StaticUserIds.PLANKAI].includes(user.id);
 
 export const isUserAdminOrProjectOwner = (user) =>
   [UserRoles.ADMIN, UserRoles.PROJECT_OWNER].includes(user.role);

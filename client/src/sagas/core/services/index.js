@@ -11,6 +11,7 @@ import autoLogout from './auto-logout';
 import modals from './modals';
 import config from './config';
 import webhooks from './webhooks';
+import ai from './ai';
 import users from './users';
 import projects from './projects';
 import projectManagers from './project-managers';
@@ -41,6 +42,7 @@ export default {
   ...modals,
   ...config,
   ...webhooks,
+  ...ai,
   ...users,
   ...projects,
   ...projectManagers,

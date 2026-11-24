@@ -13,6 +13,9 @@ module.exports = {
       type: 'ref',
       required: true,
     },
+    triggeringUser: {
+      type: 'ref',
+    },
     request: {
       type: 'ref',
     },
@@ -134,7 +137,7 @@ module.exports = {
       // TODO: send webhooks
     }
 
-    await sails.helpers.actions.createOne.with({
+    const action = await sails.helpers.actions.createOne.with({
       webhooks,
       values: {
         card,
@@ -142,6 +145,9 @@ module.exports = {
         data: {
           card: _.pick(card, ['name']),
           list: _.pick(values.list, ['id', 'type', 'name']),
+          ...(inputs.triggeringUser && {
+            triggeringUser: _.pick(inputs.triggeringUser, ['id', 'name']),
+          }),
         },
         user: values.creatorUser,
       },
@@ -149,6 +155,8 @@ module.exports = {
       board: values.board,
       list: values.list,
     });
+
+    card.actionId = action.id;
 
     return card;
   },

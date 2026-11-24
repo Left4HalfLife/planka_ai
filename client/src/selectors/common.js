@@ -24,6 +24,12 @@ export const selectProjectCreateForm = ({ ui: { projectCreateForm } }) => projec
 
 export const selectSmtpTestState = ({ ui: { smtpTestState } }) => smtpTestState;
 
+export const selectAiModelsState = ({ ui: { aiModelsState } }) => aiModelsState;
+
+export const selectAiCleanupState = ({ ui: { aiCleanupState } }) => aiCleanupState;
+
+export const selectAiMessagesState = ({ ui: { aiMessagesState } }) => aiMessagesState;
+
 export default {
   selectIsSocketDisconnected,
   selectIsInitializing,
@@ -35,4 +41,7 @@ export default {
   selectUserCreateForm,
   selectProjectCreateForm,
   selectSmtpTestState,
+  selectAiModelsState,
+  selectAiCleanupState,
+  selectAiMessagesState,
 };

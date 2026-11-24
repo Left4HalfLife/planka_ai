@@ -13,6 +13,7 @@ import KanbanContent from './KanbanContent';
 import FiniteContent from './FiniteContent';
 import EndlessContent from './EndlessContent';
 import ShortcutsProvider from './ShortcutsProvider';
+import AiChatPanel from './AiChatPanel';
 import CardModal from '../../cards/CardModal';
 import BoardActivitiesModal from '../../activities/BoardActivitiesModal';
 
@@ -57,6 +58,7 @@ const Board = React.memo(() => {
       <ShortcutsProvider>
         <Content />
       </ShortcutsProvider>
+      <AiChatPanel />
       {modalNode}
     </>
   );

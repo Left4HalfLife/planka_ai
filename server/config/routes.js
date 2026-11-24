@@ -125,6 +125,11 @@ module.exports.routes = {
   'PATCH /api/config': 'config/update',
   'POST /api/config/test-smtp': 'config/test-smtp',
 
+  'POST /api/ai/fetch-models': 'ai/fetch-models',
+  'POST /api/ai/cleanup': 'ai/cleanup',
+  'GET /api/boards/:boardId/ai/messages': 'ai/index-messages',
+  'POST /api/boards/:boardId/ai/messages': 'ai/create-message',
+
   'GET /api/webhooks': 'webhooks/index',
   'POST /api/webhooks': 'webhooks/create',
   'PATCH /api/webhooks/:id': 'webhooks/update',

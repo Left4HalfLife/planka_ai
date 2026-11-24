@@ -15,6 +15,7 @@ import { useClosableModal } from '../../../hooks';
 import UsersPane from './UsersPane';
 import SmtpPane from './SmtpPane';
 import WebhooksPane from './WebhooksPane';
+import AiPane from './AiPane';
 
 import styles from './AdministrationModal.module.scss';
 
@@ -56,6 +57,12 @@ const AdministrationModal = React.memo(() => {
       context: 'title',
     }),
     render: () => <WebhooksPane />,
+  });
+  panes.push({
+    menuItem: t('common.aiAssistant', {
+      context: 'title',
+    }),
+    render: () => <AiPane />,
   });
 
   const isUsersPaneActive = activeTabIndex === 0;

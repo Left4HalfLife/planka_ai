@@ -29,6 +29,9 @@ module.exports = {
       type: 'ref',
       required: true,
     },
+    triggeringUser: {
+      type: 'ref',
+    },
     webhooks: {
       type: 'ref',
     },
@@ -314,7 +317,7 @@ module.exports = {
         );
 
         if (values.list) {
-          await sails.helpers.actions.createOne.with({
+          const action = await sails.helpers.actions.createOne.with({
             webhooks,
             values: {
               card,
@@ -323,6 +326,9 @@ module.exports = {
                 card: _.pick(card, ['name']),
                 fromList: _.pick(inputs.list, ['id', 'type', 'name']),
                 toList: _.pick(values.list, ['id', 'type', 'name']),
+                ...(inputs.triggeringUser && {
+                  triggeringUser: _.pick(inputs.triggeringUser, ['id', 'name']),
+                }),
               },
               user: inputs.actorUser,
             },
@@ -330,6 +336,9 @@ module.exports = {
             board: inputs.board,
             list: values.list,
           });
+
+          // Preserve the native activity id for callers that need to link related audit data.
+          card.actionId = action.id;
         }
       }
 

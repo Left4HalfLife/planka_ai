@@ -22,6 +22,9 @@ module.exports.policies = {
   'config/update': ['is-authenticated', 'is-admin'],
   'config/test-smtp': ['is-authenticated', 'is-admin'],
 
+  'ai/fetch-models': ['is-authenticated', 'is-admin'],
+  'ai/cleanup': ['is-authenticated', 'is-admin'],
+
   'webhooks/index': ['is-authenticated', 'is-external', 'is-admin'],
   'webhooks/create': ['is-authenticated', 'is-external', 'is-admin'],
   'webhooks/update': ['is-authenticated', 'is-external', 'is-admin'],

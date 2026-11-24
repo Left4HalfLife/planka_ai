@@ -88,9 +88,13 @@ const SMTP_FIELD_NAMES = [
   'smtpFrom',
 ];
 
+// Never leave the server. `aiApiKeyHint` is the redacted stand-in exposed in their place.
+const AI_SECRET_FIELD_NAMES = ['aiApiKeyEncrypted'];
+
 module.exports = {
   MAIN_ID,
   SMTP_FIELD_NAMES,
+  AI_SECRET_FIELD_NAMES,
 
   attributes: {
     //  ╔═╗╦═╗╦╔╦╗╦╔╦╗╦╦  ╦╔═╗╔═╗
@@ -136,6 +140,46 @@ module.exports = {
       type: 'string',
       allowNull: true,
       columnName: 'smtp_from',
+    },
+    aiIsEnabled: {
+      type: 'boolean',
+      required: true,
+      columnName: 'ai_is_enabled',
+    },
+    aiBaseUrl: {
+      type: 'string',
+      allowNull: true,
+      columnName: 'ai_base_url',
+    },
+    aiModel: {
+      type: 'string',
+      allowNull: true,
+      columnName: 'ai_model',
+    },
+    aiContextLimit: {
+      type: 'number',
+      allowNull: true,
+      columnName: 'ai_context_limit',
+    },
+    aiConfidenceThresholdHigh: {
+      type: 'number',
+      defaultsTo: 0.8,
+      columnName: 'ai_confidence_threshold_high',
+    },
+    aiConfidenceThresholdLow: {
+      type: 'number',
+      defaultsTo: 0.5,
+      columnName: 'ai_confidence_threshold_low',
+    },
+    aiApiKeyEncrypted: {
+      type: 'string',
+      allowNull: true,
+      columnName: 'ai_api_key_encrypted',
+    },
+    aiApiKeyHint: {
+      type: 'string',
+      allowNull: true,
+      columnName: 'ai_api_key_hint',
     },
 
     //  ╔═╗╔╦╗╔╗ ╔═╗╔╦╗╔═╗

@@ -14,6 +14,8 @@ services:
     environment:
       - BASE_URL=http://localhost:3000
       - DATABASE_URL=postgresql://postgres@postgres/planka
+      - AI_BASE_URL=${ENDPOINT:-}
+      - AI_API_KEY=${LM_STUDIO_API_KEY:-}
 
       # Optionally store the database password in secrets:
       # - DATABASE_URL=postgresql://postgres:$${DATABASE_PASSWORD}@postgres/planka

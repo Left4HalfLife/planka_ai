@@ -108,6 +108,7 @@ export const ActivityTypes = {
   REMOVE_MEMBER_FROM_CARD: 'removeMemberFromCard',
   COMPLETE_TASK: 'completeTask',
   UNCOMPLETE_TASK: 'uncompleteTask',
+  AI_ACTION: 'aiAction',
 };
 
 export const NotificationTypes = {
